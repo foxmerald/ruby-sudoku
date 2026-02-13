@@ -6,6 +6,8 @@ Ruby Sudoku
 
 A Sudoku Terminal Game built in pure Ruby.
 
+<img width="802" height="633" alt="Screenshot 2026-02-13 at 23 12 57" src="https://github.com/user-attachments/assets/a0a5aec1-5a0e-45ce-8a0a-f78180f4c33c" />
+
 ## Getting Started
 
 ### Prerequisites 
