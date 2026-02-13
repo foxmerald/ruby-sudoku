@@ -57,7 +57,7 @@ Default mode is moderate. You can choose the difficulty at the start of the game
 
 ## Author
 
-@foxmerald (Marie-Therese Fischer)
+[@foxmerald](https://github.com/foxmerald) (Marie-Therese Fischer)
 
 ## License
 MIT License - feel free to use and modify as needed.
