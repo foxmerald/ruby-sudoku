@@ -17,6 +17,11 @@ VALID_INPUTS = {
 
 # Main execution logic
 if __FILE__ == $PROGRAM_NAME
+  # Ensure terminal is in a known state
+  if $stdin.tty?
+    system("stty sane")
+  end
+
   puts "Please select a difficulty level: e (easy), m (moderate), h (hard) "
 
   input = gets

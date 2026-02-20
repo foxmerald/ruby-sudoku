@@ -5,6 +5,10 @@
 class SudokuGenerator
   attr_reader :board, :solution, :initial_board
 
+  NUMBERS = (1..9)
+  BOARD_INDICES = (0...9)
+  BOX_INDICES = (0...3)
+
   def initialize
     prepare_board
     @solution = nil
@@ -20,8 +24,17 @@ class SudokuGenerator
     # Save the solution
     @solution = @board.map(&:dup)
 
-    # 3. Remove digits to create the puzzle
+    # Remove digits to create the puzzle
     remove_digits(difficulty)
+
+    # Ensure that the puzzle has one unique solution.
+    10.times do
+      break if uniquely_solvable?
+
+      # Reset board and retry if the generated puzzle is not valid
+      reset_board_to_solution
+      remove_digits(difficulty)
+    end
 
     # Save the initial puzzle state (immutable cells)
     @initial_board = @board.map(&:dup)
@@ -29,14 +42,60 @@ class SudokuGenerator
 
   private
 
-  # Creates an empty 9x9 board filled with zeros
+  # Reset the board to the full solution state
+  def reset_board_to_solution
+    @board = @solution.map(&:dup)
+  end
+
+  # Check if the current board state has exactly one solution
+  def uniquely_solvable?
+    original_board = @board.map(&:dup)
+    @solutions_count = 0
+    count_solutions
+    @board = original_board # Restore the board state
+
+    @solutions_count == 1
+  end
+
+  # Count the number of solutions for the current board state
+  # Stop immediately if more than 1 solution is found
+  def count_solutions(x = 0, y = 0)
+    return if @solutions_count > 1
+
+    # Move to the next row
+    if y >= 9
+      x += 1
+      y = 0
+    end
+
+    # Check if end of row and column reached (solution found)
+    return @solutions_count += 1 if x == 9
+
+    # Skip cells that are already filled
+    return count_solutions(x, y + 1) if @board[x][y].nonzero?
+
+    NUMBERS.each do |num|
+      next unless safe?(x, y, num)
+
+      @board[x][y] = num
+      count_solutions(x, y + 1)
+
+      # Stop if we already found more than one solution
+      break if @solutions_count > 1
+
+      # Backtrack
+      @board[x][y] = 0
+    end
+  end
+
+  # Create an empty 9x9 board filled with zeros
   def prepare_board
     @board = Array.new(9) { Array.new(9, 0) }
   end
 
   # Fill diagonal 3x3 boxes independent of each other
   def fill_diagonal_boxes
-    (0...9).step(3) do |x|
+    BOARD_INDICES.step(3) do |x|
       fill_box(x, x)
     end
   end
@@ -44,10 +103,10 @@ class SudokuGenerator
   # Fill a 3x3 box starting at (row_start, column_start) with random numbers
   def fill_box(row_start, column_start)
     num = 0
-    (0...3).each do |x|
-      (0...3).each do |y|
+    BOX_INDICES.each do |x|
+      BOX_INDICES.each do |y|
         loop do
-          num = rand(1..9)
+          num = rand(NUMBERS)
           break if unused_in_box?(row_start, column_start, num)
         end
 
@@ -58,8 +117,8 @@ class SudokuGenerator
 
   # Check if a number is not used in the 3x3 box yet
   def unused_in_box?(row_start, column_start, num)
-    (0...3).each do |x|
-      (0...3).each do |y|
+    BOX_INDICES.each do |x|
+      BOX_INDICES.each do |y|
         return false if @board[row_start + x][column_start + y] == num
       end
     end
@@ -77,11 +136,11 @@ class SudokuGenerator
   end
 
   def used_in_row?(x, num)
-    (0...9).any? { |y| @board[x][y] == num }
+    BOARD_INDICES.any? { |y| @board[x][y] == num }
   end
 
   def used_in_col?(y, num)
-    (0...9).any? { |x| @board[x][y] == num }
+    BOARD_INDICES.any? { |x| @board[x][y] == num }
   end
 
   # Fill the remaining cells
@@ -99,7 +158,7 @@ class SudokuGenerator
     return fill_remaining(x, y + 1) if @board[x][y].nonzero?
 
     # Try placing numbers 1-9 in the current cell and recursively fill the next cells
-    (1..9).each do |num|
+    NUMBERS.each do |num|
       next unless safe?(x, y, num)
 
       @board[x][y] = num
@@ -120,8 +179,8 @@ class SudokuGenerator
     end
 
     while count.positive?
-      x = rand(0...9)
-      y = rand(0...9)
+      x = rand(BOARD_INDICES)
+      y = rand(BOARD_INDICES)
 
       if @board[x][y].nonzero?
         @board[x][y] = 0

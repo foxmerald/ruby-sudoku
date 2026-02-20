@@ -4,21 +4,25 @@ require "io/console"
 
 class SudokuUI
   # ANSI Colors
-  RESET   = "\e[0m" # Reset all attributes
-  CURSOR  = "\e[7m" # Inverted colors
-  RED     = "\e[31m"
-  GREEN   = "\e[32m"
-  YELLOW  = "\e[33m"
-  BLUE    = "\e[34m"
-  MAGENTA = "\e[35m"
-  CYAN    = "\e[36m"
-  WHITE   = "\e[37m"
-  GRAY    = "\e[90m"
+  RESET       = "\e[0m" # Reset all attributes
+  CURSOR      = "\e[7m" # Inverted colors
+  RED         = "\e[31m"
+  GREEN       = "\e[32m"
+  YELLOW      = "\e[33m"
+  BLUE        = "\e[34m"
+  MAGENTA     = "\e[35m"
+  CYAN        = "\e[36m"
+  WHITE       = "\e[37m"
+  GRAY        = "\e[90m"
   # Input keys
-  BACKSPACE = "\177"
-  DELETE = "\004"
+  BACKSPACE   = "\177"
+  DELETE      = "\004"
+  ARROW_UP    = "\e[A"
+  ARROW_DOWN  = "\e[B"
+  ARROW_LEFT  = "\e[D"
+  ARROW_RIGHT = "\e[C"
   # Unicode
-  HYPHEN = "\u2013"
+  HYPHEN      = "\u2013"
 
   def initialize(generator, difficulty)
     @generator = generator
@@ -67,8 +71,8 @@ class SudokuUI
     end
 
     # Print sudoku board and sidebar
-    board_lines.each_with_index do |board_line, index|
-      sidebar_line = sidebar[index] || ""
+    board_lines.each_with_index do |board_line, i|
+      sidebar_line = sidebar[i] || ""
       puts "#{board_line}   #{sidebar_line}"
     end
   end
@@ -162,10 +166,10 @@ class SudokuUI
     @message = ""
 
     case key
-    when "\e[A" then move_up
-    when "\e[B" then move_down
-    when "\e[D" then move_left
-    when "\e[C" then move_right
+    when ARROW_UP then move_up
+    when ARROW_DOWN then move_down
+    when ARROW_LEFT then move_left
+    when ARROW_RIGHT then move_right
     when "1".."9" then input_number(key)
     when "x", BACKSPACE, DELETE then input_delete
     when "c" then input_submit_solution
@@ -215,28 +219,27 @@ class SudokuUI
   end
 
   def read_key
+    # Disable echo and enable raw mode to capture single keypresses
     $stdin.echo = false
     $stdin.raw!
 
+    # Read the first character
     input = $stdin.getc.chr
 
-    return unless input == "\e"
-
-    begin
-      input << $stdin.read_nonblock(3)
-    rescue StandardError
-      nil
+    # Handle escape sequences for arrow keys to allow cursor movement
+    if input == "\e"
+      begin
+        input << $stdin.read_nonblock(3)
+        input << $stdin.read_nonblock(2)
+      rescue StandardError
+        nil
+      end
     end
 
-    begin
-      input << $stdin.read_nonblock(2)
-    rescue StandardError
-      nil
-    end
+    input
   ensure
+    # Restore terminal settings
     $stdin.echo = true
     $stdin.cooked!
-
-    return input
   end
 end

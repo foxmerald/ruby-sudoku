@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 puts "Starting test execution..."
-require_relative 'sudoku_generator'
+require_relative "sudoku_generator"
 
 class SudokuTester
   def self.run
@@ -8,32 +10,32 @@ class SudokuTester
 
   def run_tests
     puts "Running Sudoku Tests..."
-    
+
     # 1. Initialization
     setup
     test_initialization
-    
+
     # 2. Structure & Generation
     setup
     test_structure
-    
+
     # 3. Difficulty Levels
     setup
     test_difficulties
-    
+
     # 4. Validity
     setup
     test_solution_validity
-    
+
     # 5. Immutability
     setup
     test_immutability
-    
+
     puts "\n🎉 All tests passed successfully!"
   rescue StandardError => e
     puts "\n❌ Test Failed: #{e.message}"
     puts e.backtrace
-    exit 1
+    exit(1)
   end
 
   private
@@ -46,7 +48,8 @@ class SudokuTester
     unless condition
       raise "Assertion Failed: #{message}"
     end
-    print "."
+
+    print(".")
   end
 
   def assert_equal(expected, actual, message = nil)
@@ -54,7 +57,8 @@ class SudokuTester
     unless expected == actual
       raise "Assertion Failed: #{msg}"
     end
-    print "."
+
+    print(".")
   end
 
   def test_initialization
@@ -65,10 +69,10 @@ class SudokuTester
   end
 
   def test_structure
-    @generator.generate('easy')
+    @generator.generate("easy")
     assert_equal(9, @generator.board.length)
     assert_equal(9, @generator.board[0].length)
-    
+
     flattened_sol = @generator.solution.flatten
     assert(flattened_sol.none? { |x| x == 0 }, "Solution should be fully filled")
     assert_equal(81, flattened_sol.length)
@@ -76,23 +80,23 @@ class SudokuTester
 
   def test_difficulties
     # Test Easy
-    @generator.generate('easy')
+    @generator.generate("easy")
     holes = @generator.board.flatten.count(0)
     assert_equal(30, holes, "Easy difficulty hole count mismatch")
 
     # Test Moderate
-    @generator.generate('moderate')
+    @generator.generate("moderate")
     holes = @generator.board.flatten.count(0)
     assert_equal(45, holes, "Moderate difficulty hole count mismatch")
 
     # Test Hard
-    @generator.generate('hard')
+    @generator.generate("hard")
     holes = @generator.board.flatten.count(0)
     assert_equal(55, holes, "Hard difficulty hole count mismatch")
   end
 
   def test_solution_validity
-    @generator.generate('easy')
+    @generator.generate("easy")
     sol = @generator.solution # Access the stored solution
 
     # Rows
@@ -121,13 +125,13 @@ class SudokuTester
   end
 
   def test_immutability
-    @generator.generate('easy')
+    @generator.generate("easy")
     initial = @generator.initial_board
     current = @generator.board
 
     # Content should match initially
     assert_equal(current, initial, "Initial board content mismatch")
-    
+
     # References should differ (deep copy check)
     assert(current.object_id != initial.object_id, "Board object reference should be different")
     assert(current[0].object_id != initial[0].object_id, "Row object reference should be different")
