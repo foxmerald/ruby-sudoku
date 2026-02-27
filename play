@@ -1,2 +1,11 @@
 #!/bin/bash
-bundle exec ruby main.rb
+
+# Check if gems are installed
+bundle check > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+  echo "--- Dependencies missing! Running 'bundle install' for you... ---"
+  bundle install
+fi
+
+# Run the game
+bundle exec ruby main.rb "$@"

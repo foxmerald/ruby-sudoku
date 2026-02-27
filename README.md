@@ -13,24 +13,33 @@ A Sudoku Terminal Game built in pure Ruby.
 ### Prerequisites 
 
 * [ruby](https://www.ruby-lang.org/en/documentation/installation/)
+* [bundler](https://rubygems.org/gems/bundler) (`gem install bundler`)
 
 ### Installation
 
-* Clone the repo
-  ```sh
-  git clone 
-  ```
+```sh
+# Clone the repo
+git clone 
+
+# Install dependencies
+bundle install
+```
 
 ### Executing program
 
-* Run with 
-  ```sh
-  bundle exec ruby main.rb
-  ```
-  or simply
-  ```sh
-  ./play
-  ```
+You can run the game with 
+```sh
+bundle exec ruby main.rb
+```
+
+or for a shortcut
+```sh
+# Make the script executable
+chmod +x play
+
+# Then simply use the shortcut
+./play
+```
 
 ## How to Play
 Commands within the game:
@@ -54,6 +63,10 @@ Default mode is moderate. You can choose the difficulty at the start of the game
 | e   | Easy     | Good for beginners  |
 | m   | Moderate | Balanced experience |
 | h   | Hard     | More challenging    |
+
+## Print Mode
+
+You can also use `--print [DIFFICULTY]` to create a non-interactive, printable version.
 
 ## Author
 
