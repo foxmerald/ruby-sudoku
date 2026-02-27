@@ -67,6 +67,7 @@ Default mode is moderate. You can choose the difficulty at the start of the game
 ## Print Mode
 
 You can also use `--print [DIFFICULTY]` to create a non-interactive, printable version.
+<img width="667" height="479" alt="Screenshot 2026-02-27 at 18 33 04" src="https://github.com/user-attachments/assets/fd0708f5-1064-4d0a-9964-3837eda8bc87" />
 
 ## Author
 
